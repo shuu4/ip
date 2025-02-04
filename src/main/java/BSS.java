@@ -3,8 +3,8 @@ import java.util.Scanner;
 public class BSS {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100]; // Fixed-size array to store tasks
-        int task_counter = 0; // Counter for the number of tasks
+        Task[] tasks = new Task[100]; 
+        int task_counter = 0;
 
         System.out.println("____________________________________________________________");
         System.out.println(" 행복은 성적순이 아니라 부석순! I'm BSS!");
