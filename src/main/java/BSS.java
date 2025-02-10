@@ -65,7 +65,7 @@ public class BSS {
                     System.out.println("____________________________________________________________");
                 } else {
                     System.out.println("____________________________________________________________");
-                    System.out.println(" Task list is full! Cannot add more tasks.");
+                    System.out.println(" Task list is full!");
                     System.out.println("____________________________________________________________");
                 }
             }
