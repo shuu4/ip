@@ -4,7 +4,7 @@ public class BSS {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Task[] tasks = new Task[100]; 
-        int task_counter = 0;
+        int taskCounter = 0;
 
         System.out.println("____________________________________________________________");
         System.out.println(" 행복은 성적순이 아니라 부석순! I'm BSS!");
@@ -21,22 +21,22 @@ public class BSS {
                 break;
             } else if (command.equals("list")) {
                 System.out.println("____________________________________________________________");
-                if (task_counter == 0) {
+                if (taskCounter == 0) {
                     System.out.println(" Gimme a task!");
                 } else {
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < task_counter; i++) {
+                    for (int i = 0; i < taskCounter; i++) {
                         System.out.println(" " + (i + 1) + ".[" + tasks[i].getStatusIcon() + "] " + tasks[i].description);
                     }
                 }
                 System.out.println("____________________________________________________________");
             } else if (command.startsWith("mark ")) {
-                int task_index = Integer.parseInt(command.split(" ")[1]) - 1;
-                if (task_index >= 0 && task_index < task_counter) {
-                    tasks[task_index].markAsDone();
+                int taskIndex = Integer.parseInt(command.split(" ")[1]) - 1;
+                if (taskIndex >= 0 && taskIndex < taskCounter) {
+                    tasks[taskIndex].markAsDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   [" + tasks[task_index].getStatusIcon() + "] " + tasks[task_index].description);
+                    System.out.println("   [" + tasks[taskIndex].getStatusIcon() + "] " + tasks[taskIndex].description);
                     System.out.println("____________________________________________________________");
                 } else {
                     System.out.println("____________________________________________________________");
@@ -45,7 +45,7 @@ public class BSS {
                 }
             } else if (command.startsWith("unmark ")) {
                 int task_index = Integer.parseInt(command.split(" ")[1]) - 1;
-                if (task_index >= 0 && task_index < task_counter) {
+                if (task_index >= 0 && task_index < taskCounter) {
                     tasks[task_index].unmarkAsDone();
                     System.out.println("____________________________________________________________");
                     System.out.println(" OK, I've marked this task as not done yet:");
@@ -57,9 +57,9 @@ public class BSS {
                     System.out.println("____________________________________________________________");
                 }
             } else {
-                if (task_counter < 100) {
-                    tasks[task_counter] = new Task(command);
-                    task_counter++;
+                if (taskCounter < 100) {
+                    tasks[taskCounter] = new Task(command);
+                    taskCounter++;
                     System.out.println("____________________________________________________________");
                     System.out.println(" added: " + command);
                     System.out.println("____________________________________________________________");
