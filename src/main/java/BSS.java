@@ -4,7 +4,8 @@ import java.util.Scanner;
 public class BSS {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        //  ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = Storage.loadTasks();
 
         System.out.println("____________________________________________________________");
         System.out.println(" 행복은 성적순이 아니라 부석순! I'm BSS!");
@@ -71,6 +72,7 @@ public class BSS {
             }
 
             tasks.get(taskIndex).markAsDone();
+            Storage.saveTasks(tasks);
             System.out.println("____________________________________________________________");
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   " + tasks.get(taskIndex));
@@ -89,6 +91,7 @@ public class BSS {
             }
 
             tasks.get(taskIndex).unmarkAsDone();
+            Storage.saveTasks(tasks);
             System.out.println("____________________________________________________________");
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   " + tasks.get(taskIndex));
@@ -106,6 +109,7 @@ public class BSS {
 
         String description = command.substring(5).trim();
         tasks.add(new Todo(description));
+        Storage.saveTasks(tasks);
         printTaskAdded(tasks);
     }
 
@@ -118,9 +122,9 @@ public class BSS {
 
         String[] parts = command.substring(9).split(" /by ", 2);
         tasks.add(new Deadline(parts[0].trim(), parts[1].trim()));
+        Storage.saveTasks(tasks);
         printTaskAdded(tasks);
     }
-
 
 
     private static void handleEventCommand(String command, ArrayList<Task> tasks) throws DukeException {
@@ -132,6 +136,7 @@ public class BSS {
 
         String[] parts = command.substring(6).split(" /from | /to ", 3);
         tasks.add(new Event(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+        Storage.saveTasks(tasks);
         printTaskAdded(tasks);
     }
 
@@ -144,6 +149,7 @@ public class BSS {
             }
 
             Task removedTask = tasks.remove(taskIndex);
+            Storage.saveTasks(tasks);
             System.out.println("____________________________________________________________");
             System.out.println(" Noted. I've removed this task:");
             System.out.println("   " + removedTask);
