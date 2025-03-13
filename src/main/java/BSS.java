@@ -1,10 +1,11 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BSS {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCounter = 0;
+        //  ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = Storage.loadTasks();
 
         System.out.println("____________________________________________________________");
         System.out.println(" 행복은 성적순이 아니라 부석순! I'm BSS!");
@@ -21,43 +22,22 @@ public class BSS {
                     System.out.println("____________________________________________________________");
                     break;
                 } else if (command.equals("list")) {
-                    System.out.println("____________________________________________________________");
-                    if (taskCounter == 0) {
-                        System.out.println(" Gimme a task!");
-                    } else {
-                        System.out.println(" Here are the tasks in your list:");
-                        for (int i = 0; i < taskCounter; i++) {
-                            System.out.println(" " + (i + 1) + "." + tasks[i]);
-                        }
-                    }
-                    System.out.println("____________________________________________________________");
-                } else if (command.equals("todo") || command.equals("todo ")) {
-                    throw new DukeException(" Oops! You should give your todo a description.");
-                } else if (command.startsWith("todo ")) {
-                    handleTodoCommand(command, tasks, taskCounter);
-                    taskCounter++;
-                } else if (command.equals("deadline") || command.equals("deadline ")) {
-                    throw new DukeException(" Oops! A deadline must have a task description and a due date: deadline <task> /by <date>.");
-                } else if (command.startsWith("deadline ")) {
-                    handleDeadlineCommand(command, tasks, taskCounter);
-                    taskCounter++;
-                } else if (command.equals("event") || command.equals("event ")) {
-                    throw new DukeException(" Oops! An event must have a description, a start time, and an end time: event <task> /from <start> /to <end>.");
-                } else if (command.startsWith("event ")) {
-                    handleEventCommand(command, tasks, taskCounter);
-                    taskCounter++;
-                } else if (command.equals("mark") || command.equals("mark ")) {
-                    throw new DukeException(" Oops! You should specify which task number to mark as done.");
-                } else if (command.startsWith("mark ")) {
-                    handleMarkCommand(command, tasks, taskCounter);
-                } else if (command.equals("unmark") || command.equals("unmark ")) {
-                    throw new DukeException(" Oops! You should specify which task number to unmark.");
-                } else if (command.startsWith("unmark ")) {
-                    handleUnmarkCommand(command, tasks, taskCounter);
+                    printTaskList(tasks);
+                } else if (command.startsWith("todo")) {
+                    handleTodoCommand(command, tasks);
+                } else if (command.startsWith("deadline")) {
+                    handleDeadlineCommand(command, tasks);
+                } else if (command.startsWith("event")) {
+                    handleEventCommand(command, tasks);
+                } else if (command.startsWith("mark")) {
+                    handleMarkCommand(command, tasks);
+                } else if (command.startsWith("unmark")) {
+                    handleUnmarkCommand(command, tasks);
+                } else if (command.startsWith("delete")) {
+                    handleDeleteCommand(command, tasks);
                 } else {
                     throw new DukeException(" Sorry that I don't get your command, any specific tasks I can do for you? ^^ ");
                 }
-
             } catch (DukeException e) {
                 System.out.println("____________________________________________________________");
                 System.out.println(e.getMessage());
@@ -71,68 +51,121 @@ public class BSS {
         scanner.close();
     }
 
-    private static void handleMarkCommand(String command, Task[] tasks, int taskCounter) throws DukeException {
-        int taskIndex = Integer.parseInt(command.split(" ")[1]) - 1;
-        if (taskIndex >= 0 && taskIndex < taskCounter) {
-            tasks[taskIndex].markAsDone();
+    private static void printTaskList(ArrayList<Task> tasks) {
+        System.out.println("____________________________________________________________");
+        if (tasks.isEmpty()) {
+            System.out.println(" Gimme a task!");
+        } else {
+            System.out.println(" Here are the tasks in your list:");
+            for (int i = 0; i < tasks.size(); i++) {
+                System.out.println(" " + (i + 1) + "." + tasks.get(i));
+            }
+        }
+        System.out.println("____________________________________________________________");
+    }
+
+    private static void handleMarkCommand(String command, ArrayList<Task> tasks) throws DukeException {
+        try {
+            int taskIndex = Integer.parseInt(command.split(" ")[1]) - 1;
+            if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                throw new DukeException(" Oops! Invalid task number. Please enter a valid task number.");
+            }
+
+            tasks.get(taskIndex).markAsDone();
+            Storage.saveTasks(tasks);
             System.out.println("____________________________________________________________");
             System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks[taskIndex]);
+            System.out.println("   " + tasks.get(taskIndex));
             System.out.println("____________________________________________________________");
-        } else {
-            throw new DukeException(" Invalid task number! Please enter a valid number.");
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new DukeException(" Oops! Please enter a valid task number to mark.");
         }
     }
 
-    private static void handleUnmarkCommand(String command, Task[] tasks, int taskCounter) throws DukeException {
-        int taskIndex = Integer.parseInt(command.split(" ")[1]) - 1;
-        if (taskIndex >= 0 && taskIndex < taskCounter) {
-            tasks[taskIndex].unmarkAsDone();
+
+    private static void handleUnmarkCommand(String command, ArrayList<Task> tasks) throws DukeException {
+        try {
+            int taskIndex = Integer.parseInt(command.split(" ")[1]) - 1;
+            if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                throw new DukeException(" Oops! Invalid task number. Please enter a valid task number.");
+            }
+
+            tasks.get(taskIndex).unmarkAsDone();
+            Storage.saveTasks(tasks);
             System.out.println("____________________________________________________________");
             System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks[taskIndex]);
+            System.out.println("   " + tasks.get(taskIndex));
             System.out.println("____________________________________________________________");
-        } else {
-            throw new DukeException(" Invalid task number! Please enter a valid number.");
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new DukeException(" Oops! Please enter a valid task number to unmark.");
         }
     }
 
-    private static void handleTodoCommand(String command, Task[] tasks, int taskCounter) throws DukeException {
-        String description = command.substring(5).trim();
-        if (description.isEmpty()) {
+
+    private static void handleTodoCommand(String command, ArrayList<Task> tasks) throws DukeException {
+        if (command.length() <= 5 || command.substring(5).trim().isEmpty()) {
             throw new DukeException(" Oops! You should give your todo a description.");
         }
-        tasks[taskCounter] = new Todo(description);
-        System.out.println("____________________________________________________________");
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + tasks[taskCounter]);
-        System.out.println(" Now you have " + (taskCounter + 1) + " tasks in the list.");
-        System.out.println("____________________________________________________________");
+
+        String description = command.substring(5).trim();
+        tasks.add(new Todo(description));
+        Storage.saveTasks(tasks);
+        printTaskAdded(tasks);
     }
 
-    private static void handleDeadlineCommand(String command, Task[] tasks, int taskCounter) throws DukeException {
-        String[] parts = command.substring(9).split(" /by ", 2);
-        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+
+    private static void handleDeadlineCommand(String command, ArrayList<Task> tasks) throws DukeException {
+        if (command.length() <= 9 || !command.contains(" /by ") || command.substring(9).split(" /by ", 2).length < 2 || command.substring(9).split(" /by ", 2)[0].trim().isEmpty() || command.substring(9).split(" /by ", 2)[1].trim().isEmpty()) {
+
             throw new DukeException(" Oops! A deadline must have a task description and a due date: deadline <task> /by <date>.");
         }
-        tasks[taskCounter] = new Deadline(parts[0].trim(), parts[1].trim());
-        System.out.println("____________________________________________________________");
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + tasks[taskCounter]);
-        System.out.println(" Now you have " + (taskCounter + 1) + " tasks in the list.");
-        System.out.println("____________________________________________________________");
+
+        String[] parts = command.substring(9).split(" /by ", 2);
+        tasks.add(new Deadline(parts[0].trim(), parts[1].trim()));
+        Storage.saveTasks(tasks);
+        printTaskAdded(tasks);
     }
 
-    private static void handleEventCommand(String command, Task[] tasks, int taskCounter) throws DukeException {
-        String[] parts = command.substring(6).split(" /from | /to ", 3);
-        if (parts.length < 3 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty() || parts[2].trim().isEmpty()) {
+
+    private static void handleEventCommand(String command, ArrayList<Task> tasks) throws DukeException {
+        if (command.length() <= 6 || !command.contains(" /from ") || !command.contains(" /to ") || command.substring(6).split(" /from | /to ", 3).length < 3 ||
+                command.substring(6).split(" /from | /to ", 3)[0].trim().isEmpty() || command.substring(6).split(" /from | /to ", 3)[1].trim().isEmpty() || command.substring(6).split(" /from | /to ", 3)[2].trim().isEmpty()) {
+
             throw new DukeException(" Oops! An event must have a description, a start time, and an end time: event <task> /from <start> /to <end>.");
         }
-        tasks[taskCounter] = new Event(parts[0].trim(), parts[1].trim(), parts[2].trim());
+
+        String[] parts = command.substring(6).split(" /from | /to ", 3);
+        tasks.add(new Event(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+        Storage.saveTasks(tasks);
+        printTaskAdded(tasks);
+    }
+
+
+    private static void handleDeleteCommand(String command, ArrayList<Task> tasks) throws DukeException {
+        try {
+            int taskIndex = Integer.parseInt(command.split(" ")[1]) - 1;
+            if (taskIndex < 0 || taskIndex >= tasks.size()) {
+                throw new DukeException(" Oops! Invalid task number. Please enter a valid task number.");
+            }
+
+            Task removedTask = tasks.remove(taskIndex);
+            Storage.saveTasks(tasks);
+            System.out.println("____________________________________________________________");
+            System.out.println(" Noted. I've removed this task:");
+            System.out.println("   " + removedTask);
+            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+            System.out.println("____________________________________________________________");
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            throw new DukeException(" Oops! Please enter a valid task number to delete.");
+        }
+    }
+
+
+    private static void printTaskAdded(ArrayList<Task> tasks) {
         System.out.println("____________________________________________________________");
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + tasks[taskCounter]);
-        System.out.println(" Now you have " + (taskCounter + 1) + " tasks in the list.");
+        System.out.println(" Got it! I've added this task:");
+        System.out.println("   " + tasks.get(tasks.size() - 1));
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
         System.out.println("____________________________________________________________");
     }
 }
