@@ -77,7 +77,7 @@ delete TASK_NUMBER
 ## **6. Exiting the program**
 
 Ends the session, closes the chatbot.  
-Current task list will be automatically stored.
+Current task list will be saved automatically and restored upon next session.
 
 ```sh
 byeMessage
