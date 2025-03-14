@@ -1,2 +1,3 @@
 T | 0 | getup
 T | 0 | hi
+E | 0 | svt | tues | thurs
