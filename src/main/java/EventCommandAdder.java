@@ -3,6 +3,12 @@ public class EventCommandAdder extends Command {
     private final String from;
     private final String to;
 
+    /**
+     * Constructs an EventCommandAdder with the specified task description, start time, and end time.
+     *
+     * @param args The full command input by the user, expected in the format: "task description /from start /to end".
+     * @throws DukeException If the input format is incorrect.
+     */
     public EventCommandAdder(String args) throws DukeException {
         String[] parts = args.split(" /from | /to ", 3);
         if (parts.length < 3) {
@@ -13,6 +19,14 @@ public class EventCommandAdder extends Command {
         this.to = parts[2].trim();
     }
 
+    /**
+     * Executes the "event" command.
+     * Adds a new event task to the task list and updates storage.
+     *
+     * @param tasks   The task list where the new event task will be added.
+     * @param ui      The user interface for displaying messages.
+     * @param storage The storage system to persist data.
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         Task task = new Event(description, from, to);
