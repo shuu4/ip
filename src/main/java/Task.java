@@ -19,6 +19,10 @@ public abstract class Task {
         this.isDone = false;
     }
 
+    public String getDescription() {
+        return this.description;
+    }
+
     public abstract String toFileString();
 
     public static Task fromFileString(String line) {

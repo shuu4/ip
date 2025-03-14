@@ -13,6 +13,7 @@ public class Parser {
             case "mark" -> new CommandMarker(commandArgs);
             case "unmark" -> new CommandUnmarker(commandArgs);
             case "delete" -> new CommandDeleter(commandArgs);
+            case "find" -> new CommandFinder(commandArgs);
             default -> throw new DukeException(" Sorry that I don't get your command, any specific tasks I can do for you? ^^");
         };
     }
